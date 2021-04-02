@@ -53,8 +53,8 @@ with open('sigD.csv') as f:
         data1D.append(float(row[1])) # second column
         #data2D.append(float(row[2])) # third column
 
-
-
+samp_rate = len(data1A)/tA[-1]
+print(samp_rate)
 # for i in range(len(tA)):
 #      # print the data to verify it was read
 #     print(str(tA[i]) + ", " + str(data1A[i]))
