@@ -51,9 +51,10 @@ with open('sigD.csv') as f:
         # read the rows 1 one by one
         tD.append(float(row[0])) # leftmost column
         data1D.append(float(row[1])) # second column
-
-
         #data2D.append(float(row[2])) # third column
-for i in range(len(tA)):
-     # print the data to verify it was read
-    print(str(tA[i]) + ", " + str(data1A[i]))
+
+
+
+# for i in range(len(tA)):
+#      # print the data to verify it was read
+#     print(str(tA[i]) + ", " + str(data1A[i]))
