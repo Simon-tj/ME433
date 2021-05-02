@@ -2,6 +2,7 @@
 #include<sys/attribs.h>  // __ISR macro
 
 #include <stdio.h>
+#include <math.h>
 
 // DEVCFG0
 #pragma config DEBUG = OFF // disable debugging
@@ -39,6 +40,7 @@ void writeUART1(const char * string);
 
 void initSPI();
 unsigned char spi_io(unsigned char o);
+void spi_dac(unsigned char channel, unsigned short voltage);
 
 
 int main() {
@@ -81,40 +83,38 @@ int main() {
     // enable the uart
     U1MODEbits.ON = 1;
     
+    initSPI();
     
     __builtin_enable_interrupts();
-    char m[100];
+    unsigned short i=0;
     
-    int button_flag = 0;
-    int count = 0;
-
     while (1) {
-        // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
-        // remember the core timer runs at half the sysclk
-       if(!PORTBbits.RB4)
-       {
-           _CP0_SET_COUNT(0);
-           button_flag = 1;
-           LATAbits.LATA4 = 1;
-           while(button_flag)
-           {
-               if (_CP0_GET_COUNT() > 12000000)
-               {
-                   LATAbits.LATA4 = !LATAbits.LATA4;
-                   count += 1;
-                   _CP0_SET_COUNT(0);
-               }
-               if (count == 4)
-               {
-                   button_flag = 0;
-                   LATAbits.LATA4 = 0;
-                   count = 0;
-                   sprintf(m, "Hello!");
-                   writeUART1(m);
-                   
-               }
-           }
-       }
+        LATAbits.LATA0 = 0;
+        if(i<100)
+        {
+            spi_dac(1,i*40);
+        }
+        else
+        {
+            spi_dac(1,3960-(i-100)*40);
+        }
+        LATAbits.LATA0 = 1;
+        
+        LATAbits.LATA0 = 0;
+        spi_dac(0,1980*sin((3.14/50)*i)+1980);
+        LATAbits.LATA0 = 1;
+        
+        i++;
+        if(i>=200)
+        {
+            i=0;
+        }
+        _CP0_SET_COUNT(0);
+        //Delay 1/100th second
+        while(_CP0_GET_COUNT() < 48000000 / 480 ) {
+            
+        }
+        
     }
 }
 
@@ -149,6 +149,16 @@ unsigned char spi_io(unsigned char o) {
         ;
     }
     return SPI1BUF;
+}
+
+void spi_dac(unsigned char channel, unsigned short voltage)
+{
+    unsigned short output;
+    output = channel << 15;
+    output = output | (0b111 << 12);
+    output = output | voltage;
+    spi_io(output >> 8);
+    spi_io(output);
 }
 
 void readUART1(char * message, int maxLength) {
