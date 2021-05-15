@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "i2c_master_noint.h"
-#include "ws2812b.h"
+#include "ST7789.h"
+#include "spi.h"
 
 // DEVCFG0
 #pragma config DEBUG = OFF // disable debugging
@@ -61,10 +61,45 @@ int main() {
     LATAbits.LATA4 = 0;
     
     
-   
+    initSPI();
+    LCD_init();
     __builtin_enable_interrupts();
     _CP0_SET_COUNT(0);
+    LCD_clearScreen(BLACK);
+    char* hellow[50];
+    char* number[50];
+    char* fpscount[50];
+    int delay = 0;
+    int ii = 0;
+    int timestart;
     
     
+    LCD_drawProgressBar(28,50,200,RED);
+    while(1)
+    {
+        
+        for (ii = 0; ii < 100; ii++) {
+        timestart = _CP0_GET_COUNT();
+        delay = 0;
+        sprintf(hellow, "Hello World! %d", ii);
+        sprintf(number, "%d", ii);
+        LCD_drawString(28, 32, CYAN, hellow);
+        while (delay < 500000) {
+            delay++;
+        }
+        LCD_drawString(28 + 13 * 6, 32, BLACK, number);
+        LCD_drawProgressBar(28,50,ii*2,BLUE);
+        if (ii == 99)
+        {
+            LCD_drawProgressBar(28,50,200,RED);
+        }
+        LCD_drawString(28+6*8, 82, BLACK, fpscount);
+        sprintf(hellow,"FPS: ");
+        LCD_drawString(28, 82, CYAN, hellow);
+        sprintf(fpscount, "%d", 24000000/(_CP0_GET_COUNT()-timestart));
+        LCD_drawString(28+6*8, 82, CYAN, fpscount);
+        
+    }
+    }
     
 }

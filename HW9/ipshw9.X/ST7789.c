@@ -15,6 +15,7 @@
 #include "ST7789.h"
 #include "spi.h"
 #include "font.h"
+#include <string.h>
 
 void LCD_command(unsigned char com) {
     LATBbits.LATB12 = 0; // DC
@@ -108,5 +109,50 @@ void LCD_clearScreen(unsigned short color) {
 }
 
 // drawChar function
-
+void LCD_drawChar(unsigned short xstart, unsigned short ystart, unsigned short color, unsigned char letter) {
+    letter = letter - 0x20;
+    int i = 0;
+    int j = 0;
+    unsigned short ystartinit = ystart;
+    for (i=0;i<5;i++)
+    {
+        for(j=0;j<8;j++)
+        {
+            if((ASCII[letter][i] >> j) & 0b01 == 1)
+            {
+                LCD_drawPixel(xstart,ystart,color);
+            }
+            ystart+=1;
+        }
+        xstart+=1;
+        ystart = ystartinit;
+    }
+}
 // drawString function
+void LCD_drawString(unsigned short xstart, unsigned short ystart, unsigned short color, char* m)
+{
+    int size = strlen(m);
+    int i = 0;
+    for(i = 0;i < size; i++)
+    {
+        LCD_drawChar(xstart,ystart,color,m[i]);
+        xstart+=6;
+    }
+}
+
+void LCD_drawProgressBar(unsigned short xstart, unsigned short ystart, unsigned short xend, unsigned short color)
+{
+    int i = 0;
+    int j = 0;
+    unsigned short ystartinit = ystart;
+    for (i=0;i<(xend-xstart);i++)
+    {
+        for(j=0;j<8;j++)
+        {
+            LCD_drawPixel(xstart,ystart,color);
+            ystart+=1;
+        }
+        xstart+=1;
+        ystart = ystartinit;
+    }
+}
