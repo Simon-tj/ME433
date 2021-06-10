@@ -118,23 +118,23 @@ int main() {
             i2c_read_multiple(0b1101010, 0x20, imudata, 14);
             
             for (jj = 0; jj < 7; jj++) {
-                imudataadj[jj] = (short)((imudata[jj*2+1] << 8) | imudata[jj*2]) / 100;
+                imudataadj[jj] = (short)((imudata[jj*2+1] << 8) | imudata[jj*2]);
                 //imudataadj[jj] = (signed short) ((imudata[jj*2] << 8) | imudata[jj+1]);
             }
             
-            sprintf(imudata1, "%d", (short) imudataadj[0]);
+            sprintf(imudata1, "%d  ", (short) imudataadj[0]);
             LCD_drawString(28, 32, CYAN, imudata1);
-            sprintf(imudata1, "%d", imudataadj[1]);
+            sprintf(imudata1, "%d  ", imudataadj[1]);
             LCD_drawString(28, 38+6, CYAN, imudata1);
-            sprintf(imudata1, "%d", imudataadj[2]);
+            sprintf(imudata1, "%d  ", imudataadj[2]);
             LCD_drawString(28, 44+12, CYAN, imudata1);
-            sprintf(imudata1, "%d", imudataadj[3]);
+            sprintf(imudata1, "%d  ", imudataadj[3]);
             LCD_drawString(28, 50+18, CYAN, imudata1);
-            sprintf(imudata1, "%d", imudataadj[4]);
+            sprintf(imudata1, "%d  ", imudataadj[4]);
             LCD_drawString(28, 56+24, CYAN, imudata1);
-            sprintf(imudata1, "%d", imudataadj[5]);
+            sprintf(imudata1, "%d  ", imudataadj[5]);
             LCD_drawString(28, 62+30, CYAN, imudata1);
-            sprintf(imudata1, "%d", imudataadj[6]);
+            sprintf(imudata1, "%d  ", imudataadj[6]);
             LCD_drawString(28, 68+36, CYAN, imudata1);
             
 //
@@ -146,12 +146,16 @@ int main() {
 //            sprintf(hellow, "Hello World! %d", ii);
 //            sprintf(number, "%d", ii);
 //            LCD_drawString(28, 32, CYAN, hellow);
-            LCD_drawVProgressBar(28, 150, abs(imudataadj[4]), BLUE);
-            LCD_drawHProgressBar(28, 150, abs(imudataadj[5]), BLUE);
-            while (delay < 10) {
+            
+            LCD_drawVProgressBar(28, 150, abs(imudataadj[4])/100, BLUE);
+            LCD_drawHProgressBar(28, 150, abs(imudataadj[5])/100, BLUE);
+            while (delay < 1000) {
                 delay++;
             }
-            LCD_clearScreen(BLACK);
+            
+            LCD_drawVProgressBar(28, 150, abs(imudataadj[4])/100, BLACK);
+            LCD_drawHProgressBar(28, 150, abs(imudataadj[5])/100, BLACK);
+           // LCD_clearScreen(BLACK);
             
             //Progress Bar
 //            LCD_drawProgressBar(28, 50, ii * 2, BLUE);
